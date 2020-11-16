@@ -17,21 +17,21 @@ public class Rule {
     //Term[] pattern;
     //Term[] effect;
     //int[] effectType;
-
-    File file;
-    Scanner input;
-    String line;
     String action_token;
     String[] split_line;
     String[] split_line2;
     String  condition_string;
     String[] condition_tokens;
-    Map<String, Integer> hashMap = new HashMap();
     String global_obj;
+    Map<String, Integer> hashMap;
 
-    public Rule() throws FileNotFoundException {
-        file = new File("src/ai/abstraction/rules-simple.txt");
-        input = new Scanner(file);
+
+    public Rule(String line) throws FileNotFoundException {
+
+
+
+        hashMap = new HashMap();
+
 
         hashMap.put("Base", 3);
         hashMap.put("Worker", 2);
@@ -40,7 +40,6 @@ public class Rule {
         hashMap.put("idle", 7);
         hashMap.put("own", 1);
         hashMap.put("enoughResourcesFor", 6);
-
         hashMap.put("doTrainWorker", 8);
         hashMap.put("doBuildBase", 9);
         hashMap.put("doBuildBarracks", 10);
@@ -50,33 +49,20 @@ public class Rule {
         hashMap.put("~own", 14);
 
         //hashMap.put();
+        split_line2 = line.split(":-");
+        action_token = split_line2[0];
+        condition_string = split_line2[1];
+        set_effect(action_token);
 
-        while(input.hasNextLine()){
-            line = input.nextLine();
-
-            //Test
-            System.out.println(line);
-
-            if(line.isEmpty())
-                continue;
-
-            split_line = line.split(" ");
-            if(split_line[0].equals("#"))
-                continue;
-
-            split_line2 = line.split(":-");
-            action_token = split_line2[0];
-            condition_string = split_line2[1];
-            set_effect(action_token);
-            set_effect_type(action_token);
-            set_pattern(condition_string );
-
-
-        }
-
-        input.close();
+        //Effect type what you were looking for to distinguish the two
+        set_effect_type(action_token);
+        set_pattern(condition_string );
 
     }
+
+
+
+
 
     public void set_pattern(String condition_string){
         Term term;
@@ -151,6 +137,7 @@ public class Rule {
            term.print_term();
     }
 
+    /*
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println(System.getProperty("user.dir"));
         Rule rule = new Rule();
@@ -158,6 +145,8 @@ public class Rule {
         //System.out.println("Test");
         rule.print_rule();
     }
+
+     */
 
 
 

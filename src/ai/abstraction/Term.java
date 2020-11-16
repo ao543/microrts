@@ -1,6 +1,9 @@
 package ai.abstraction;
 import rts.units.Unit;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class Term {
 
     //Maybe switch to diff types
@@ -41,5 +44,27 @@ public class Term {
 
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Term term = (Term) o;
+        return functor == term.functor &&
+                Arrays.equals(parameters, term.parameters);
+    }
 
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(functor);
+        result = 31 * result + Arrays.hashCode(parameters);
+        return result;
+    }
+
+    public static void main(String[] args){
+        Term t1 = new Term(2, 3);
+        Term t2 = new Term(2, 3);
+
+        System.out.println(t1.equals(t2));
+    }
 }
+
