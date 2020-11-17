@@ -70,20 +70,35 @@ public class RbsAI extends AbstractionLayerAI{
 
     //Currently set for basic
     void perception(int player_numb,  PhysicalGameState pgs, Player p, GameState gs){
+
+        boolean has_worker = false;
+        boolean has_base = false;
+        boolean has_barracks = false;
+
         for (Unit u : pgs.getUnits()){
             if(u.getPlayer() != player_numb)
                 continue;
-            if(u.getType() == baseType)
+            if(u.getType() == baseType) {
                 kb.addTerm(new Term(1, 3));
+                has_base = true;
+            }
 
             if(u.getType() == baseType && gs.getActionAssignment(u) == null)
                 kb.addTerm(new Term(7, 3));
 
-            if(u.getType() == workerType)
+            if(u.getType() == workerType) {
                 kb.addTerm(new Term(1, 2));
+                has_worker = true;
+            }
 
-            if(u.getType() == barracksType)
-               kb.addTerm(new Term(1, 4));
+            if(u.getType() == barracksType) {
+                kb.addTerm(new Term(1, 4));
+                has_barracks = true;
+            }
+
+            if(u.getType() == barracksType && gs.getActionAssignment(u) == null) {
+                kb.addTerm(new Term(7, 4));
+            }
 
             if(u.getType() == workerType && gs.getActionAssignment(u) == null)
                 kb.addTerm(new Term(7, 2));
@@ -100,7 +115,18 @@ public class RbsAI extends AbstractionLayerAI{
             if(p.getResources() >= barracksType.cost)
                 kb.addTerm(new Term(6, 4));
 
+            if(p.getResources() >= lightType.cost)
+                kb.addTerm(new Term(6, 5));
+
         }
+
+        if(!has_barracks)
+            kb.addTerm(new Term(14, 4));
+
+        if(!has_worker)
+            kb.addTerm(new Term(14, 2));
+        if(!has_base)
+            kb.addTerm(new Term(14, 3));
     }
 
     //Think can just implement single unification algorithm for whole kb
@@ -149,7 +175,7 @@ public class RbsAI extends AbstractionLayerAI{
     }
 
 
-    //Implemented with Random Rule
+    //Currently FIFO
     public ArrayList<Rule> arbitrate(ArrayList<Rule> FiredRules){
         Collections.shuffle(FiredRules);
         return FiredRules;
@@ -191,15 +217,23 @@ public class RbsAI extends AbstractionLayerAI{
 
         List<Unit> units =  pgs.getUnits();
         List<Unit> player_units = get_player_units(units, player);
-        //
+
+        //Test
+        //System.out.println("Testing");
 
         if(!conditons_met(r.pattern))
             return;
 
+        //Test
+        //System.out.println("Conditions Met");
+       // r.print_rule();
 
         List<Integer> reservedPositions = new LinkedList<>();
 
         for(Term term: r.effect){
+            //Test
+            System.out.println("functor");
+            System.out.println(term.functor);
             switch(term.functor){
                 case 8:
                     for(Unit u: player_units)
@@ -282,17 +316,38 @@ public class RbsAI extends AbstractionLayerAI{
         Map<Term, Term> bindings;
         ArrayList<Rule> rulesToExecute;
 
-        for(Rule r: rules){
+        //Temporarily ignoring unification
+
+        /*
+        for(Rule r: rules) {
 
             bindings = unification(r.pattern, kb);
-            if(!bindings.isEmpty())
+            if (!bindings.isEmpty())
                 firedRules.add(instantiate(r, bindings));
-            rulesToExecute = arbitrate(firedRules);
-            for(Rule e: rulesToExecute)
-                execute(e, pgs, player);
-
-
         }
+
+         */
+
+
+            firedRules = rules;
+            rulesToExecute = arbitrate(firedRules);
+            System.out.println("Printing executable rules");
+
+            for(Rule e: rulesToExecute){
+                System.out.println("testing rule");
+                e.print_rule();
+                execute(e, pgs, player);
+                //e.print_rule();
+            }
+
+
+            //Test
+            //System.out.println("iteration");
+
+
+
+
+
 
 
     }
@@ -346,6 +401,9 @@ public class RbsAI extends AbstractionLayerAI{
 
         perception(player, pgs, p, gs);
 
+        //Test
+        //kb.print_kb();
+
         //This should be an array of rules need to pass in
         ArrayList<Rule> rules = loadRules();
         ruleBasedSystemIteration(rules, pgs, p);
@@ -371,6 +429,23 @@ public class RbsAI extends AbstractionLayerAI{
         return parameters;
     }
 
-    public static void main(String[] args){}
+    public static void main(String[] args) throws Exception {
+
+        UnitTypeTable utt = new UnitTypeTable();
+        //"maps/8x8/basesWorkers8x8.xml"
+        //PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
+        //basesWorkersBarracks8x8
+        //PhysicalGameState pgs = PhysicalGameState.load("maps/8x8/bases8x8.xml", utt);
+        PhysicalGameState pgs = PhysicalGameState.load("maps/8x8/basesWorkersBarracks8x8.xml", utt);
+        GameState gs = new GameState(pgs, utt);
+        RbsAI ai2 = new RbsAI(utt, new AStarPathFinding());
+
+
+
+        ai2.getAction(1, gs);
+        //ai2.kb.print_kb();
+
+
+    }
 
 }

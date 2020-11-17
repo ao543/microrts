@@ -27,10 +27,14 @@ import rts.units.UnitTypeTable;
 public class PlayGameWithMouseTest {
     public static void main(String args[]) throws Exception {
         UnitTypeTable utt = new UnitTypeTable();
-        PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
-
+        //PhysicalGameState pgs = PhysicalGameState.load("maps/16x16/basesWorkers16x16.xml", utt);
+        PhysicalGameState pgs = PhysicalGameState.load("maps/8x8/bases8x8.xml", utt);
         GameState gs = new GameState(pgs, utt);
+        //int MAXCYCLES = 10000;
         int MAXCYCLES = 10000;
+
+        //Test, period began as 100
+        //int PERIOD = 100;
         int PERIOD = 100;
         boolean gameover = false;
                 
@@ -45,10 +49,16 @@ public class PlayGameWithMouseTest {
  //        AI ai2 = new ContinuingAI(new NaiveMCTS(PERIOD, -1, 100, 20, 0.33f, 0.0f, 0.75f, new RandomBiasedAI(), new SimpleEvaluationFunction(), true));
           AI ai2 = new RbsAI(utt, new AStarPathFinding());
         long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
+
+
         do{
             if (System.currentTimeMillis()>=nextTimeToUpdate) {
                 PlayerAction pa1 = ai1.getAction(0, gs);
                 PlayerAction pa2 = ai2.getAction(1, gs);
+
+                //Test
+                //System.out.println(pa2);
+
                 gs.issueSafe(pa1);
                 gs.issueSafe(pa2);
 
@@ -63,6 +73,7 @@ public class PlayGameWithMouseTest {
                     e.printStackTrace();
                 }
             }
+
         }while(!gameover && gs.getTime()<MAXCYCLES);
         ai1.gameOver(gs.winner());
         ai2.gameOver(gs.winner());

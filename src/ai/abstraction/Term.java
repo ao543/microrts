@@ -46,6 +46,20 @@ public class Term {
 
     @Override
     public boolean equals(Object o) {
+
+        //Test
+        //May be out of order
+        //set in ascending order
+
+
+            System.out.println("functor print");
+            System.out.println(functor);
+            System.out.println(((Term) o).functor);
+            System.out.println(Arrays.toString(parameters));
+            System.out.println(  Arrays.toString( ( (Term) o).parameters));
+
+
+
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Term term = (Term) o;

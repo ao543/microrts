@@ -22,4 +22,12 @@ public class KnowledgeBase {
     void clear(){
         facts.clear();
     }
+
+    public void print_kb(){
+        System.out.println("Printing kb");
+        for(Term t1: facts)
+            t1.print_term();
+        System.out.println("End print of kb");
+    }
+
 }
