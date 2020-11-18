@@ -132,38 +132,66 @@ public class RbsAI extends AbstractionLayerAI{
     //Think can just implement single unification algorithm for whole kb
     //What about that not stuff
     //May need to work in implementing equality operator
-    public Map<Term, Term> unification(List<Term> pattern, KnowledgeBase kb){
-        Map<Term, Term> bindings = new HashMap<Term, Term>();
+    public Map<Integer, Integer> unification(List<Term> pattern, KnowledgeBase kb){
+        Map<Integer, Integer> bindings = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> temp;
 
-        for(Term t1: pattern)
-            for(Term t2: kb.facts) {
-                if (!unification(t1, t2))
-                    bindings.put(t1, t2);
-                if (!bindings.isEmpty())
-                    continue;
-            }
-            return bindings;
+
+        for(Term t1: pattern){
+            temp = unification(t1, kb);
+            if(temp != null)
+                bindings.putAll(temp);
+        }
+
+
+
+
+        return bindings;
 
 
     }
 
-    public boolean unification(Term t1, Term t2){
+    public Map<Integer, Integer> unification(Term t1, KnowledgeBase kb){
+        Map<Integer, Integer> bindings = new HashMap<Integer, Integer>();;
+        for(Term s: kb.facts) {
+            bindings = unification(t1, s);
+            if(bindings != null)
+                return bindings;
+        }
+        return null;
+
+
+    }
+
+    public Map<Integer, Integer> unification(Term t1, Term t2){
+
+        //Test
+        t1.print_term();
+
+
+        Map<Integer, Integer> bindings = new HashMap<Integer, Integer>();
 
         if(t1.functor != t2.functor)
-            return false;
+            return null;
+
+        //System.out.println("reached1");
+
         if(t1.parameters.length != t2.parameters.length)
-            return false;
+            return null;
+        //System.out.println("reached2");
 
         for(int i = 0; i < t1.parameters.length; i++){
             if(t1.parameters[i] < 0)
-                return true;
+               bindings.put(t1.parameters[i], t2.parameters[i]);
             else if(t1.parameters[i] != t2.parameters[i])
-                return false;
+                return null;
         }
-        return false;
+        //System.out.println("reached3");
+        return bindings;
 
     }
 
+    /*
     public Rule instantiate(Rule r, Map<Term, Term> bindings){
 
         for(Term t1: r.pattern) {
@@ -173,6 +201,8 @@ public class RbsAI extends AbstractionLayerAI{
         return r;
 
     }
+
+     */
 
 
     //Currently FIFO
@@ -310,32 +340,64 @@ public class RbsAI extends AbstractionLayerAI{
 
     }
 
-    void ruleBasedSystemIteration(ArrayList<Rule> rules, PhysicalGameState pgs, Player player ){
+    public void substitute_term(Term term, HashMap<Integer, Integer> bindings){
+        for(int i = 0; i < term.parameters.length; i++)
+            if(bindings.get(term.parameters[i]) != null)
+                term.parameters[i] = bindings.get(term.parameters[i]);
+
+
+    }
+
+    public Rule instantiate(Rule r, HashMap<Integer, Integer> bindings) throws FileNotFoundException {
+        //Rule bound_rule = r.clone_rule();
+        for(Term term: r.pattern ){
+            substitute_term(term, bindings);
+        }
+        for(Term term: r.effect ){
+            substitute_term(term, bindings);
+        }
+
+        return r;
+    }
+
+    void ruleBasedSystemIteration(ArrayList<Rule> rules, PhysicalGameState pgs, Player player ) throws FileNotFoundException {
 
         ArrayList<Rule> firedRules = new ArrayList<Rule>();
-        Map<Term, Term> bindings;
+        HashMap<Integer, Integer> bindings = new HashMap<Integer, Integer>();
+
         ArrayList<Rule> rulesToExecute;
 
         //Temporarily ignoring unification
 
-        /*
+        //Test
+
+
         for(Rule r: rules) {
 
-            bindings = unification(r.pattern, kb);
+           bindings = (HashMap<Integer, Integer>) unification(r.pattern, kb);
+           //Test
+            System.out.println(bindings);
             if (!bindings.isEmpty())
-                firedRules.add(instantiate(r, bindings));
+                instantiate(r, bindings);
+                //firedRules.add(instantiate(r, bindings));
         }
 
-         */
+
+        //Test
+        //System.out.println("Test size");
+        //System.out.println(firedRules.size());
 
 
             firedRules = rules;
+            //Test
+            //for(Rule rule: firedRules)
+                //rule.print_rule();
             rulesToExecute = arbitrate(firedRules);
-            System.out.println("Printing executable rules");
+            //System.out.println("Printing executable rules");
 
             for(Rule e: rulesToExecute){
-                System.out.println("testing rule");
-                e.print_rule();
+                //System.out.println("testing rule");
+                //]e.print_rule();
                 execute(e, pgs, player);
                 //e.print_rule();
             }
@@ -368,7 +430,8 @@ public class RbsAI extends AbstractionLayerAI{
         String global_obj;
         Rule rule;
 
-        file = new File("src/ai/abstraction/rules-simple.txt");
+        //file = new File("src/ai/abstraction/rules-simple.txt");
+        file = new File("src/ai/abstraction/rules-simple2.txt");
         input = new Scanner(file);
 
 
@@ -386,6 +449,8 @@ public class RbsAI extends AbstractionLayerAI{
                 continue;
 
             rule = new Rule(line);
+            //Test
+            //rule.print_rule();
             rules.add(rule);
 
 
@@ -439,6 +504,12 @@ public class RbsAI extends AbstractionLayerAI{
         PhysicalGameState pgs = PhysicalGameState.load("maps/8x8/basesWorkersBarracks8x8.xml", utt);
         GameState gs = new GameState(pgs, utt);
         RbsAI ai2 = new RbsAI(utt, new AStarPathFinding());
+
+        //Term t1 = new Term(2, 3);
+        //Term t2 = new Term(2, 3);
+
+        //System.out.println("test unification");
+        //System.out.println(ai2.unification(t1, t2));
 
 
 

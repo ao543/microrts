@@ -24,6 +24,7 @@ public class Rule {
     String[] condition_tokens;
     String global_obj;
     Map<String, Integer> hashMap;
+    String line;
 
 
     public Rule(String line) throws FileNotFoundException {
@@ -31,7 +32,7 @@ public class Rule {
 
 
         hashMap = new HashMap();
-
+        this.line = line;
 
         hashMap.put("Base", 3);
         hashMap.put("Worker", 2);
@@ -47,6 +48,7 @@ public class Rule {
         hashMap.put("doTrainLight", 12);
         hashMap.put("doAttack", 13);
         hashMap.put("~own", 14);
+        hashMap.put("X", -1);
 
         //hashMap.put();
         split_line2 = line.split(":-");
@@ -61,8 +63,12 @@ public class Rule {
     }
 
 
+    public Rule clone_rule() throws FileNotFoundException {
+
+            return new Rule(this.line);
 
 
+    }
 
     public void set_pattern(String condition_string){
         Term term;

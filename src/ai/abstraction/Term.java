@@ -52,11 +52,11 @@ public class Term {
         //set in ascending order
 
 
-            System.out.println("functor print");
-            System.out.println(functor);
-            System.out.println(((Term) o).functor);
-            System.out.println(Arrays.toString(parameters));
-            System.out.println(  Arrays.toString( ( (Term) o).parameters));
+            //System.out.println("functor print");
+            //System.out.println(functor);
+            //System.out.println(((Term) o).functor);
+            //System.out.println(Arrays.toString(parameters));
+            //System.out.println(  Arrays.toString( ( (Term) o).parameters));
 
 
 
