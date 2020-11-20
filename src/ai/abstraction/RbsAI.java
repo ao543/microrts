@@ -431,7 +431,7 @@ public class RbsAI extends AbstractionLayerAI{
         Rule rule;
 
         //file = new File("src/ai/abstraction/rules-simple.txt");
-        file = new File("src/ai/abstraction/rules-simple2.txt");
+        file = new File("src/ai/abstraction/rules-simple.txt");
         input = new Scanner(file);
 
 
