@@ -59,7 +59,6 @@ public class RbsAI extends AbstractionLayerAI{
         lightType = utt.getUnitType("Light");
         kb = new KnowledgeBase();
 
-        //hash_map = new HashMap<Integer, UnitType>();
 
     }
 
@@ -68,7 +67,6 @@ public class RbsAI extends AbstractionLayerAI{
     }
 
 
-    //Currently set for basic
     void perception(int player_numb,  PhysicalGameState pgs, Player p, GameState gs){
 
         boolean has_worker = false;
@@ -129,9 +127,7 @@ public class RbsAI extends AbstractionLayerAI{
             kb.addTerm(new Term(14, 3));
     }
 
-    //Think can just implement single unification algorithm for whole kb
-    //What about that not stuff
-    //May need to work in implementing equality operator
+
     public Map<Integer, Integer> unification(List<Term> pattern, KnowledgeBase kb){
         Map<Integer, Integer> bindings = new HashMap<Integer, Integer>();
         Map<Integer, Integer> temp;
@@ -142,7 +138,6 @@ public class RbsAI extends AbstractionLayerAI{
             if(temp != null)
                 bindings.putAll(temp);
         }
-
 
 
 
@@ -165,20 +160,17 @@ public class RbsAI extends AbstractionLayerAI{
 
     public Map<Integer, Integer> unification(Term t1, Term t2){
 
-        //Test
-        t1.print_term();
 
+        t1.print_term();
 
         Map<Integer, Integer> bindings = new HashMap<Integer, Integer>();
 
         if(t1.functor != t2.functor)
             return null;
-
-        //System.out.println("reached1");
+        
 
         if(t1.parameters.length != t2.parameters.length)
             return null;
-        //System.out.println("reached2");
 
         for(int i = 0; i < t1.parameters.length; i++){
             if(t1.parameters[i] < 0)
@@ -186,33 +178,18 @@ public class RbsAI extends AbstractionLayerAI{
             else if(t1.parameters[i] != t2.parameters[i])
                 return null;
         }
-        //System.out.println("reached3");
+
         return bindings;
 
     }
 
-    /*
-    public Rule instantiate(Rule r, Map<Term, Term> bindings){
-
-        for(Term t1: r.pattern) {
-            if (bindings.containsKey(t1))
-                r.pattern.set(r.pattern.indexOf(t1), bindings.get(t1));
-        }
-        return r;
-
-    }
-
-     */
-
-
-    //Currently FIFO
     public ArrayList<Rule> arbitrate(ArrayList<Rule> FiredRules){
         Collections.shuffle(FiredRules);
         return FiredRules;
     }
 
 
-    //May be unneecessary and need to delete
+
     public List<Unit> get_player_units(List<Unit> units, Player player){
 
         ArrayList<Unit> player_units = new ArrayList<Unit>();
@@ -225,8 +202,6 @@ public class RbsAI extends AbstractionLayerAI{
         return player_units;
 
     }
-
-
 
 
     public boolean conditons_met(List<Term> pattern){
@@ -242,21 +217,11 @@ public class RbsAI extends AbstractionLayerAI{
 
     public void execute(Rule r, PhysicalGameState pgs, Player player){
 
-        //Write up conditions for u
-
-
         List<Unit> units =  pgs.getUnits();
         List<Unit> player_units = get_player_units(units, player);
 
-        //Test
-        //System.out.println("Testing");
-
         if(!conditons_met(r.pattern))
             return;
-
-        //Test
-        //System.out.println("Conditions Met");
-       // r.print_rule();
 
         List<Integer> reservedPositions = new LinkedList<>();
 
@@ -349,7 +314,7 @@ public class RbsAI extends AbstractionLayerAI{
     }
 
     public Rule instantiate(Rule r, HashMap<Integer, Integer> bindings) throws FileNotFoundException {
-        //Rule bound_rule = r.clone_rule();
+
         for(Term term: r.pattern ){
             substitute_term(term, bindings);
         }
@@ -367,39 +332,24 @@ public class RbsAI extends AbstractionLayerAI{
 
         ArrayList<Rule> rulesToExecute;
 
-        //Temporarily ignoring unification
-
-        //Test
-
 
         for(Rule r: rules) {
 
            bindings = (HashMap<Integer, Integer>) unification(r.pattern, kb);
-           //Test
+
             System.out.println(bindings);
             if (!bindings.isEmpty())
                 instantiate(r, bindings);
-                //firedRules.add(instantiate(r, bindings));
+
         }
 
 
-        //Test
-        //System.out.println("Test size");
-        //System.out.println(firedRules.size());
-
-
             firedRules = rules;
-            //Test
-            //for(Rule rule: firedRules)
-                //rule.print_rule();
             rulesToExecute = arbitrate(firedRules);
-            //System.out.println("Printing executable rules");
+
 
             for(Rule e: rulesToExecute){
-                //System.out.println("testing rule");
-                //]e.print_rule();
                 execute(e, pgs, player);
-                //e.print_rule();
             }
 
 

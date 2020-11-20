@@ -14,9 +14,6 @@ public class Rule {
     List<Term> effect = new ArrayList<Term>();
     List<Integer> effectType = new ArrayList<Integer>();
 
-    //Term[] pattern;
-    //Term[] effect;
-    //int[] effectType;
     String action_token;
     String[] split_line;
     String[] split_line2;
@@ -50,13 +47,13 @@ public class Rule {
         hashMap.put("~own", 14);
         hashMap.put("X", -1);
 
-        //hashMap.put();
+
         split_line2 = line.split(":-");
         action_token = split_line2[0];
         condition_string = split_line2[1];
         set_effect(action_token);
 
-        //Effect type what you were looking for to distinguish the two
+
         set_effect_type(action_token);
         set_pattern(condition_string );
 
@@ -66,7 +63,6 @@ public class Rule {
     public Rule clone_rule() throws FileNotFoundException {
 
             return new Rule(this.line);
-
 
     }
 
@@ -91,15 +87,8 @@ public class Rule {
             }
 
             functor = functor.trim();
-            //Test
-            //System.out.println(functor);
-            //System.out.println(arg);
-            //System.out.println(hashMap.get(functor));
-            //System.out.println(hashMap.get(arg));
-
 
             term = new Term(hashMap.get(functor).intValue(), hashMap.get(arg));
-
 
             pattern.add(term);
         }
@@ -111,10 +100,6 @@ public class Rule {
         int last_quote = action_token.lastIndexOf("\"");
         String object_string = action_token.substring(first_quote + 1, last_quote);
         global_obj = object_string;
-
-        //Test
-        //System.out.println("Test numb");
-        //System.out.println(hashMap.get(action_str));
 
         Term functor = new Term(hashMap.get(action_str), hashMap.get(object_string));
         effect.add(functor);
@@ -142,18 +127,6 @@ public class Rule {
         for(Term term: effect)
            term.print_term();
     }
-
-    /*
-    public static void main(String[] args) throws FileNotFoundException {
-        System.out.println(System.getProperty("user.dir"));
-        Rule rule = new Rule();
-        //System.out.println(rule.pattern.size());
-        //System.out.println("Test");
-        rule.print_rule();
-    }
-
-     */
-
 
 
 }
